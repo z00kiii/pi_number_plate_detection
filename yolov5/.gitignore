@@ -23,8 +23,33 @@
 !setup.cfg
 !cfg/yolov3*.cfg
 
+# Neural Network weights -----------------------------------------------------------------------------------------------
+*.weights
+*.pt
+*.pb
+*.onnx
+*.engine
+*.mlmodel
+*.torchscript
+*.tflite
+*.h5
+*_saved_model/
+*_web_model/
+*_openvino_model/
+darknet53.conv.74
+yolov3-tiny.conv.15
+
+# Paths --------------------------------------------------------------------------------------------------------------
+
 storage.googleapis.com
 runs/*
+!runs/train/
+runs/train/*
+!runs/train/yolov5s_results
+runs/train/yolov5s_results/*
+!runs/train/yolov5s_results/weights
+runs/train/yolov5s_results/weights/*
+!runs/train/yolov5s_results/weights/best.pt
 data/*
 data/images/*
 !data/*.yaml
@@ -47,22 +72,6 @@ VOC/
 *.m~
 *.mat
 !targets*.mat
-
-# Neural Network weights -----------------------------------------------------------------------------------------------
-*.weights
-*.pt
-*.pb
-*.onnx
-*.engine
-*.mlmodel
-*.torchscript
-*.tflite
-*.h5
-*_saved_model/
-*_web_model/
-*_openvino_model/
-darknet53.conv.74
-yolov3-tiny.conv.15
 
 # GitHub Python GitIgnore ----------------------------------------------------------------------------------------------
 # Byte-compiled / optimized / DLL files
