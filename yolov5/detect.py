@@ -35,6 +35,7 @@ import sys
 from pathlib import Path
 import pytesseract
 
+import torchvision
 import torch
 
 FILE = Path(__file__).resolve()
@@ -178,7 +179,7 @@ def run(
                         save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
                         
 
-                    pytesseract.pytesseract.tesseract_cmd = r'D:\Program Files\Tesseract-OCR\tesseract.exe'
+                    #pytesseract.pytesseract.tesseract_cmd = r'D:\Program Files\Tesseract-OCR\tesseract.exe'
 
                     crop1 = imc[int(xyxy[1]):int(xyxy[3]), int(xyxy[0]):int(xyxy[2])]
 
@@ -196,8 +197,9 @@ def run(
                        #text2 = pytesseract.image_to_string(blur, config=' --oem 3 tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')     
                        # text3 = pytesseract.image_to_string(blur, config='tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')     
                         text4 = pytesseract.image_to_string(blur, config='--psm 9 --oem 3 --psm 11 -c tessedit_char_whitelist="qwertzuiopüasdfghjklöäyxcvbnmÄÖÜABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 "')                  
-                    except: 
-                        text = None
+                    except Exception:
+                        print(Exception)
+                        text4 = "Bitch"
                   #  print("text", text)
                   #  print("text1", text1)
                   #  print("text2", text2)
