@@ -36,8 +36,9 @@ data/images/*
 !data/hyps
 !data/scripts
 !data/images
-!data/images/zidane.jpg
-!data/images/bus.jpg
+!data/images/auto1.JPG
+!data/images/auto2.JPG
+!data/images/auto3.JPG
 !data/*.sh
 
 results*.csv
