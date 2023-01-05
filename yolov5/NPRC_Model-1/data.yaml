@@ -1,0 +1,12 @@
+names:
+- numberplate
+nc: 1
+roboflow:
+  license: CC BY 4.0
+  project: nprc_model
+  url: https://universe.roboflow.com/project/nprc_model/dataset/1
+  version: 1
+  workspace: project
+test: ../test/images
+train: NPRC_Model-1/train/images
+val: NPRC_Model-1/valid/images
