@@ -1,9 +1,10 @@
 import paho.mqtt.client as paho
-import time
+import datetime
 import threading
 
 # in which intervals the hearbeat should be sent. time in sec
 heartbeatinterval = 600
+
 
 class Publisher:
     def __init__(self, parkplatz_id: str, parkplatz_lot_id: str):
@@ -14,7 +15,7 @@ class Publisher:
 
         self.client = paho.Client(client_id=self.id)
         self.client.on_connect = self.on_connect
-        #self.client.on_publish = self.on_publish
+        # self.client.on_publish = self.on_publish
         self.client.connect(host="5.75.148.247", port=1883)
         self.client.loop_start()
 
@@ -46,11 +47,15 @@ class Publisher:
 
     def send_status(self, lot_free):
         """Send the new status of the lot to the broker"""
-        msg = {"id": self.id, "time": time.time(), "lot_free": lot_free}
+        msg = {"id": self.id,
+               "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+               "lot_free": lot_free,
+               "number_plate": "rofl_die_romse"
+        }
         self.client.publish("status/"+self.id, str(msg), qos=1)
 
     def send_heartbeat(self):
         """Send hearbeat signal to the broker"""
-        # Start timeout for new beat
+        # Start timer for new beat
         threading.Timer(heartbeatinterval, self.send_heartbeat).start()
         self.client.publish("heartbeat/"+self.id, "heartbeatcheck", qos=1)
