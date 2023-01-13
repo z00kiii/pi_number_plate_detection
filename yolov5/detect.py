@@ -132,7 +132,6 @@ def run(
 
         # NMS
         with dt[2]:
-            print("classes", classes)
             pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)
 
         # Second-stage classifier (optional)
@@ -182,33 +181,27 @@ def run(
                     #pytesseract.pytesseract.tesseract_cmd = r'D:\Program Files\Tesseract-OCR\tesseract.exe'
 
                     crop1 = imc[int(xyxy[1]):int(xyxy[3]), int(xyxy[0]):int(xyxy[2])]
-
+                    # resize image to double the original size as tesseract does better with certain text size
+                    crop1 = cv2.resize(crop1, None, fx = 2, fy = 2, interpolation = cv2.INTER_CUBIC)
                     gray = cv2.cvtColor(crop1, cv2.COLOR_RGB2GRAY)
                     # threshold the image using Otsus method to preprocess for tesseract
                     thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
                     # perform a median blur to smooth image slightly
                     blur = cv2.medianBlur(thresh, 3)
-                    # resize image to double the original size as tesseract does better with certain text size
-                    blur = cv2.resize(blur, None, fx = 2, fy = 2, interpolation = cv2.INTER_CUBIC)
                     # run tesseract and convert image text to string
                     try:
                        # text = pytesseract.image_to_string(blur, config='--psm 11 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')
                        # text1 = pytesseract.image_to_string(blur, config='--psm 11  tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')
                        #text2 = pytesseract.image_to_string(blur, config=' --oem 3 tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')     
                        # text3 = pytesseract.image_to_string(blur, config='tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')     
-                        text4 = pytesseract.image_to_string(blur, config='--psm 9 --oem 3 --psm 11 -c tessedit_char_whitelist="qwertzuiopüasdfghjklöäyxcvbnmÄÖÜABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 "')                  
+                        text2 = pytesseract.image_to_string(crop1, config='--psm 9 --oem 3 --psm 11 -c tessedit_char_whitelist="ÄÖÜABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"')                  
+                        text1 = pytesseract.image_to_string(gray, config='--psm 9 --oem 3 --psm 11 -c tessedit_char_whitelist="ÄÖÜABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"')                                  
+                        text3 = pytesseract.image_to_string(blur, config='--psm 9 --oem 3 --psm 11 -c tessedit_char_whitelist="ÄÖÜABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"')                  
                     except Exception:
                         print(Exception)
-                        text4 = "Bitch"
-                  #  print("text", text)
-                  #  print("text1", text1)
-                  #  print("text2", text2)
-                  #  print("text3", text3)
-                    print("text4", text4)
-
-
-                 #   text = pytesseract.image_to_string(crop1, config='-l eng --psm 9 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')  
-                  #  print(text)
+                    print("text1", text1)
+                    print("text2", text2)
+                    print("text3", text3)
 
             # Stream results
             im0 = annotator.result()
@@ -254,7 +247,7 @@ def run(
 
 def parse_opt():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default= ROOT / 'runs/train/yolov5s_results/weights/best.pt', help='model path or triton URL')
+    parser.add_argument('--weights', nargs='+', type=str, default= ROOT / 'runs/train/yolov5s_results/weights/best.onnx', help='model path or triton URL')
     parser.add_argument('--source', type=str, default=ROOT / 'data/images', help='file/dir/URL/glob/screen/0(webcam)')
     parser.add_argument('--data', type=str, default=ROOT / 'data/coco128.yaml', help='(optional) dataset.yaml path')
     parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[416], help='inference size h,w')
@@ -275,7 +268,7 @@ def parse_opt():
     parser.add_argument('--project', default=ROOT / 'runs/detect', help='save results to project/name')
     parser.add_argument('--name', default='exp', help='save results to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
-    parser.add_argument('--line-thickness', default=3, type=int, help='bounding box thickness (pixels)')
+    parser.add_argument('--line-thickness', default=2, type=int, help='bounding box thickness (pixels)')
     parser.add_argument('--hide-labels', default=False, action='store_true', help='hide labels')
     parser.add_argument('--hide-conf', default=False, action='store_true', help='hide confidences')
     parser.add_argument('--half', action='store_true', help='use FP16 half-precision inference')

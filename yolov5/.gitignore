@@ -50,6 +50,7 @@ runs/train/yolov5s_results/*
 !runs/train/yolov5s_results/weights
 runs/train/yolov5s_results/weights/*
 !runs/train/yolov5s_results/weights/best.pt
+!runs/train/yolov5s_results/weights/best.onnx
 data/*
 data/images/*
 !data/*.yaml
