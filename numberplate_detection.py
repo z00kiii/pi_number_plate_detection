@@ -33,6 +33,9 @@ def detect_numberplate():
     cam = VideoCapture(0)
     result, image = cam.read()  # take image
 
+    # close cam
+    cam.release()
+
     if result:  # if image will detected without any error show result
         imwrite(file_path, image)  # saving image in local storage
         detect_results = run(weights=YOLO / 'runs/train/yolov5s_results/weights/best.onnx',
@@ -43,6 +46,8 @@ def detect_numberplate():
         # remove image after detection
         if NOSAVE and os.path.exists(file_path):
             os.remove(file_path)
+        else:
+            print("images saved to: " + str(save_dir))
 
         # if there were numerplates detected
         if detect_results:
@@ -52,10 +57,13 @@ def detect_numberplate():
             # clean test_results
             cleaned_text_results = list(
                 map(clean, text_results))
-            return cleaned_text_results
+            # print results when started manually
+            if __name__ == "__main__":
+                print(cleaned_text_results)
+            else:
+                return cleaned_text_results
         else:
             print("no numberplate detected on the image")
-
     # If captured image is corrupted, moving to else part
     else:
         print("no image detected")
@@ -80,6 +88,7 @@ def convert_to_text(detect_results):
         except Exception as e:
             print(e)
     return text_results
+
 
 if __name__ == "__main__":
     detect_numberplate()
