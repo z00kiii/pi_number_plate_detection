@@ -24,5 +24,5 @@ threshold = 1.2
 while True:
     sensor_data = chan0.voltage
     # print(sensor_data)
-    publisher.set_lot_free(sensor_data > threshold)
+    publisher.set_lot_free(sensor_data < threshold)
     time.sleep(10)

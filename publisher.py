@@ -47,7 +47,8 @@ class Publisher:
                 # if lot is not free get the numberplate
                 if not lot_free_update:
                     numberplates = detect_numberplate()
-                print("send now")
+                else:
+                    numberplates = ""
                 self.send_status(lot_free_update, numberplates)
         # when lot status changes reset the counter
         else:
