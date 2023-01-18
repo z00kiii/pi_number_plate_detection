@@ -1,12 +1,17 @@
 import paho.mqtt.client as paho
 import datetime
 import threading
+from numberplate_detection import detect_numberplate
 
 # in which intervals the hearbeat should be sent. time in sec
 heartbeatinterval = 600
 
 
 class Publisher:
+    """Publisher class owns all the business logic:
+        when to send an update or a heartbeat to the broker 
+        when to get a numberplate text"""
+
     def __init__(self, parkplatz_id: str, parkplatz_lot_id: str):
         """Init the Publisher and Connect to the Broker"""
         self.id = parkplatz_id + "/" + parkplatz_lot_id
@@ -39,19 +44,23 @@ class Publisher:
                 self.lot_status_counter += 1
             # send status on the 3. call
             if self.lot_status_counter == 3:
-                self.send_status(self.lot_free)
+                # if lot is not free get the numberplate
+                if not lot_free_update:
+                    numberplates = detect_numberplate()
+                print("send now")
+                self.send_status(lot_free_update, numberplates)
         # when lot status changes reset the counter
         else:
             self.lot_status_counter = 1
         self.lot_free = lot_free_update
 
-    def send_status(self, lot_free):
+    def send_status(self, lot_free, numberplates):
         """Send the new status of the lot to the broker"""
         msg = {"id": self.id,
                "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                "lot_free": lot_free,
-               "number_plate": "rofl_die_romse"
-        }
+               "number_plate": numberplates
+               }
         self.client.publish("status/"+self.id, str(msg), qos=1)
 
     def send_heartbeat(self):

@@ -28,12 +28,18 @@ Usage - formats:
                                  yolov5s_paddle_model       # PaddlePaddle
 """
 
+from utils.torch_utils import select_device, smart_inference_mode
+from utils.plots import Annotator, colors, save_one_box
+from utils.general import (LOGGER, Profile, check_file, check_img_size, check_imshow, check_requirements, colorstr, cv2,
+                           increment_path, non_max_suppression, print_args, scale_boxes, strip_optimizer, xyxy2xywh)
+from utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams
+from models.common import DetectMultiBackend
 import argparse
 import os
 import platform
 import sys
 from pathlib import Path
-import pytesseract
+from PIL import Image
 
 import torchvision
 import torch
@@ -44,18 +50,11 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
-from models.common import DetectMultiBackend
-from utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams
-from utils.general import (LOGGER, Profile, check_file, check_img_size, check_imshow, check_requirements, colorstr, cv2,
-                           increment_path, non_max_suppression, print_args, scale_boxes, strip_optimizer, xyxy2xywh)
-from utils.plots import Annotator, colors, save_one_box
-from utils.torch_utils import select_device, smart_inference_mode
-
 
 @smart_inference_mode()
 def run(
-       # weights=ROOT / 'yolov5s.pt',  # model path or triton URL
-        weights = ROOT / 'runs/train/yolov5s_results/weights/best.pt',
+    # weights=ROOT / 'yolov5s.pt',  # model path or triton URL
+        weights=ROOT / 'runs/train/yolov5s_results/weights/best.pt',
         source=ROOT / 'data/images',  # file/dir/URL/glob/screen/0(webcam)
         data=ROOT / 'data/coco128.yaml',  # dataset.yaml path
         imgsz=(640, 640),  # inference size (height, width)
@@ -84,7 +83,8 @@ def run(
         vid_stride=1,  # video frame-rate stride
 ):
     source = str(source)
-    save_img = not nosave and not source.endswith('.txt')  # save inference images
+    # save_img set to False to prevent default behaviour
+    save_img = False  # not nosave and not source.endswith('.txt')  # save inference images
     is_file = Path(source).suffix[1:] in (IMG_FORMATS + VID_FORMATS)
     is_url = source.lower().startswith(('rtsp://', 'rtmp://', 'http://', 'https://'))
     webcam = source.isnumeric() or source.endswith('.streams') or (is_url and not is_file)
@@ -93,7 +93,9 @@ def run(
         source = check_file(source)  # download
 
     # Directories
-    save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # increment run
+    save_dir = Path(source)
+    # commented out old save_dir to have save_dir logic in app logic
+    # save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # increment run
     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
 
     # Load model
@@ -176,32 +178,22 @@ def run(
                         annotator.box_label(xyxy, label, color=colors(c, True))
                     if save_crop:
                         save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
-                        
-
-                    #pytesseract.pytesseract.tesseract_cmd = r'D:\Program Files\Tesseract-OCR\tesseract.exe'
 
                     crop1 = imc[int(xyxy[1]):int(xyxy[3]), int(xyxy[0]):int(xyxy[2])]
                     # resize image to double the original size as tesseract does better with certain text size
-                    crop1 = cv2.resize(crop1, None, fx = 2, fy = 2, interpolation = cv2.INTER_CUBIC)
+                    crop1 = cv2.resize(crop1, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
                     gray = cv2.cvtColor(crop1, cv2.COLOR_RGB2GRAY)
                     # threshold the image using Otsus method to preprocess for tesseract
                     thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
                     # perform a median blur to smooth image slightly
                     blur = cv2.medianBlur(thresh, 3)
-                    # run tesseract and convert image text to string
-                    try:
-                       # text = pytesseract.image_to_string(blur, config='--psm 11 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')
-                       # text1 = pytesseract.image_to_string(blur, config='--psm 11  tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')
-                       #text2 = pytesseract.image_to_string(blur, config=' --oem 3 tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')     
-                       # text3 = pytesseract.image_to_string(blur, config='tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890')     
-                        text2 = pytesseract.image_to_string(crop1, config='--psm 9 --oem 3 --psm 11 -c tessedit_char_whitelist="ÄÖÜABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"')                  
-                        text1 = pytesseract.image_to_string(gray, config='--psm 9 --oem 3 --psm 11 -c tessedit_char_whitelist="ÄÖÜABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"')                                  
-                        text3 = pytesseract.image_to_string(blur, config='--psm 9 --oem 3 --psm 11 -c tessedit_char_whitelist="ÄÖÜABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"')                  
-                    except Exception:
-                        print(Exception)
-                    print("text1", text1)
-                    print("text2", text2)
-                    print("text3", text3)
+                    if not nosave:
+                        im = Image.fromarray(crop1)
+                        im.save(save_dir / f'{p.stem}crop.jpg')
+                        im = Image.fromarray(blur)
+                        im.save(save_dir / f'{p.stem}blur.jpg')
+                    # return results
+                    return [crop1, gray, blur]
 
             # Stream results
             im0 = annotator.result()
@@ -247,10 +239,11 @@ def run(
 
 def parse_opt():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default= ROOT / 'runs/train/yolov5s_results/weights/best.onnx', help='model path or triton URL')
+    parser.add_argument('--weights', nargs='+', type=str, default=ROOT /
+                        'runs/train/yolov5s_results/weights/best.pt', help='model path or triton URL')
     parser.add_argument('--source', type=str, default=ROOT / 'data/images', help='file/dir/URL/glob/screen/0(webcam)')
     parser.add_argument('--data', type=str, default=ROOT / 'data/coco128.yaml', help='(optional) dataset.yaml path')
-    parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[416], help='inference size h,w')
+    parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[640], help='inference size h,w')
     parser.add_argument('--conf-thres', type=float, default=0.4, help='confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
     parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
