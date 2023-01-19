@@ -5,6 +5,6 @@ Installation on Raspberry Pi 4
 4. run "sudo apt install tesseract-ocr" and "sudo apt install libtesseract-dev" (https://github.com/tesseract-ocr/tesseract/issues/1799#issuecomment-632740838)
 5. update tesseract to v5 (maybe by: https://techviewleo.com/install-and-use-tesseract-ocr-on-debian/)
 6. exchange file eng.traineddata in "/usr/share/tesseract-ocr/5/tessdata/" with current on git via "wget https://github.com/tesseract-ocr/tessdata/raw/main/eng.traineddata" answered here: (https://stackoverflow.com/a/49030935/18002090)
-7. run sensor.py to start the app
+7. run main.py to start the app
 
 8. for autostart setup systemd service
