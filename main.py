@@ -2,7 +2,7 @@ import datetime
 import threading
 
 from config import parkplatz_id, parkplatz_lot_id
-from numberplate_detection import detect_numberplate
+from numberplate_recognition import detect_numberplate
 import sensor
 import publisher
 
@@ -40,12 +40,14 @@ class Main:
         # get sensor data
         lot_free_update = sensor.get_sensor_data()
 
+        # if the status on previous check is the same as the new status
+        # this construct should delay the send_lot_status method to 2 same updates in a row
         if self.lot_free == lot_free_update:
-            # only increment status_counter up to 4 to not count infitly long
-            if self.lot_status_counter < 3:
+            # only increment status_counter up to 2 to not count infitly long
+            if self.lot_status_counter < 2:
                 self.lot_status_counter += 1
-            # send status on the 3. call. this ensures a message is only sent once for each status
-            if self.lot_status_counter == 2:
+            # send status on the 2. time same status. this ensures a message is only sent once for each status
+            if self.lot_status_counter == 1:
                 # if lot is not free get the numberplate
                 if not lot_free_update:
                     numberplates = detect_numberplate()
