@@ -68,11 +68,11 @@ class Main:
                "lot_free": lot_free,
                "number_plate": numberplates
                }
-        self.publisher.publish("statuss/"+self.id, str(msg), qos=1)
+        self.publisher.publish("status/"+self.id, str(msg), qos=1)
 
     def send_heartbeat(self):
         """Send hearbeat signal to the broker"""
-        self.publisher.publish("heartbeatt/"+self.id, "heartbeatcheck", qos=1)
+        self.publisher.publish("heartbeat/"+self.id, "heartbeatcheck", qos=1)
         # Start timer for new beat
         threading.Timer(HEARTBEAT_INTERVAL, self.send_heartbeat).start()
 
