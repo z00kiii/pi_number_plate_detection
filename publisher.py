@@ -2,10 +2,10 @@ import paho.mqtt.client as paho
 
 
 class Publisher:
-    """MQTT Client that publishes Content to the Broker"""
+    """MQTT client that publishes content to the broker"""
 
     def __init__(self, id):
-        """init the Publisher and Connect to the Broker"""
+        """init the publisher and connect to the broker"""
         self.id = id
 
         self.client = paho.Client(client_id=self.id)

@@ -16,8 +16,8 @@ ads = ADS.ADS1115(i2c)
 chan0 = AnalogIn(ads, ADS.P0)
 
 def get_lot_free():
-    """read input and check if smaller than THRESHOLD
-    """
+    """read input and check if smaller than THRESHOLD"""
     sensor_data = chan0.voltage
+    # if sensor_data is bigger than THRESHOLD the lot is occupied
     return sensor_data < THRESHOLD
 
