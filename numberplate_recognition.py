@@ -65,6 +65,7 @@ def detect_numberplate():
             # clean test_results
             cleaned_text_results = list(
                 map(clean, text_results))
+            print(cleaned_text_results)
             # print results when started manually
             if __name__ == "__main__":
                 print(cleaned_text_results)

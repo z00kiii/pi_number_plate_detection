@@ -8,7 +8,7 @@ import publisher
 
 
 # in which intervals the hearbeat should be sent. time in sec
-HEARTBEAT_INTERVAL = 10
+HEARTBEAT_INTERVAL = 600
 
 # in which intervals to check the sensor. time in sec
 SENSOR_INTERVAL = 10
@@ -63,9 +63,9 @@ class Main:
 
     def send_lot_status(self, lot_free, numberplates):
         """Send the new status of the lot to the broker"""
-        msg = '{"id": ' + self.id + ', "timestamp": ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + \
-            ', "lot_free": ' + str(lot_free) + \
-            ', "number_plate": ' + str(numberplates) + '}'
+        msg = '{"id": "' + self.id + '", "timestamp": "' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + \
+            '", "lot_free": "' + str(lot_free) + \
+            '", "number_plate": "' + str(numberplates) + '"}'
         self.publisher.publish("status/"+self.id, msg, qos=1)
 
     def send_heartbeat(self):
