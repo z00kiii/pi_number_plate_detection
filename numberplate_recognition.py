@@ -9,16 +9,22 @@ from cv2 import VideoCapture, imwrite
 # pytesseract.pytesseract.tesseract_cmd = r'D:\Program Files\Tesseract-OCR\tesseract.exe'
 
 
-NOSAVE = True  # dont save images from predictions
+# whether not to save images from predictions
+NOSAVE = True
 
-FILE = Path(__file__).resolve()  # path of this file
-ROOT = FILE.parents[0]  # YOLOv5 root directory
+# path of this file
+FILE = Path(__file__).resolve()
+# YOLOv5 root directory
+ROOT = FILE.parents[0]
 YOLO = ROOT / "yolov5"
 if str(ROOT) not in sys.path:
-    sys.path.append(str(ROOT))  # add ROOT to PATH
+    # add ROOT to PATH
+    sys.path.append(str(ROOT))
 if str(YOLO) not in sys.path:
-    sys.path.append(str(YOLO))  # add ROOT to PATH
-ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
+    # add ROOT to PATH
+    sys.path.append(str(YOLO))
+# relative
+ROOT = Path(os.path.relpath(ROOT, Path.cwd()))
 
 # can import just when path contains YOLO dir
 from yolov5.utils.general import increment_path
@@ -26,12 +32,14 @@ from yolov5.detect import run
 
 
 def detect_numberplate():
-    save_dir = increment_path(
-        Path(YOLO / "runs/detect/exp"), mkdir=True)  # increment exp dirs
-    file_path = str(save_dir) + "/image.jpg"  # path for taken image
+    # increment exp dirs
+    save_dir = increment_path(Path(YOLO / "runs/detect/exp"), mkdir=True)
+    # path for taken image
+    file_path = str(save_dir) + "/image.jpg"
 
     cam = VideoCapture(0)
-    result, image = cam.read()  # take image
+    # take image
+    result, image = cam.read()
 
     # close cam
     cam.release()
@@ -78,7 +86,7 @@ def clean(result):
 
 
 def convert_to_text(detect_results):
-    """get the text from the detection results"""
+    """get the text from the detection result images"""
     text_results = []
     for result in detect_results:
         try:
@@ -89,6 +97,6 @@ def convert_to_text(detect_results):
             print(e)
     return text_results
 
-
+# for manual use
 if __name__ == "__main__":
     detect_numberplate()

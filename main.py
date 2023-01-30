@@ -38,7 +38,7 @@ class Main:
         wait for 3 calls if the status stays the same
         then send status to broker"""
         # get sensor data
-        lot_free_update = sensor.get_sensor_data()
+        lot_free_update = sensor.get_lot_free()
 
         # if the status on previous check is the same as the new status
         # this construct should delay the send_lot_status method to 2 same updates in a row

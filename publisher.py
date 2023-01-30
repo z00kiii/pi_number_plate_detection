@@ -2,16 +2,17 @@ import paho.mqtt.client as paho
 
 
 class Publisher:
-    """"""
+    """MQTT Client that publishes Content to the Broker"""
 
     def __init__(self, id):
-        """Init the Publisher and Connect to the Broker"""
+        """init the Publisher and Connect to the Broker"""
         self.id = id
 
         self.client = paho.Client(client_id=self.id)
         self.client.on_connect = self.on_connect
-        # self.client.on_publish = self.on_publish
+        # connect to broker
         self.client.connect(host="5.75.148.247", port=1883)
+        # loop for enduring connection
         self.client.loop_start()
 
     def on_connect(self, client, userdata, flags, rc):
