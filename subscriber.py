@@ -19,8 +19,4 @@ client.connect('5.75.148.247', 1883)
 client.subscribe("status/#", qos=1)
 client.subscribe("heartbeat/#", qos=1)
 
-#client.publish('status/353E6F14F3/1',
-#               '{"id": "353E6F14F5/85642","lot_free":False, "timestamp":"1234", "number_plate":"ABCDEF"}',
-#                qos=1)
-
 client.loop_forever()
