@@ -63,7 +63,7 @@ class Main:
 
     def send_lot_status(self, lot_free, numberplates):
         """Send the new status of the lot to the broker"""
-        msg = '{"id": '+ self.id +', "timestamp": ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ', "lot_free": ' +lot_free +', "number_plate": ' +numberplates +'}'
+        msg = '{"id": '+ self.id +', "timestamp": ' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ', "lot_free": ' +str(lot_free) +', "number_plate": ' +numberplates +'}'
         self.publisher.publish("status/"+self.id, msg, qos=1)
 
     def send_heartbeat(self):
