@@ -77,7 +77,7 @@ def detect_numberplate():
         print("no image detected")
 
     # return empty string when nothin was detected
-    return ""
+    return []
 
 
 def clean(result):

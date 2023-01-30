@@ -8,7 +8,7 @@ import publisher
 
 
 # in which intervals the hearbeat should be sent. time in sec
-HEARTBEAT_INTERVAL = 600
+HEARTBEAT_INTERVAL = 10
 
 # in which intervals to check the sensor. time in sec
 SENSOR_INTERVAL = 10
@@ -52,7 +52,7 @@ class Main:
                 if not lot_free_update:
                     numberplates = detect_numberplate()
                 else:
-                    numberplates = ""
+                    numberplates = []
                 self.send_lot_status(lot_free_update, numberplates)
         # when lot status changes reset the counter
         else:
