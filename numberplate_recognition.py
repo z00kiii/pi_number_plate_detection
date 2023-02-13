@@ -5,7 +5,7 @@ from pathlib import Path
 import pytesseract
 from cv2 import VideoCapture, imwrite
 
-# when running on windows import tesseract like this
+# if running on windows import tesseract like this
 # pytesseract.pytesseract.tesseract_cmd = r'D:\Program Files\Tesseract-OCR\tesseract.exe'
 
 
@@ -44,13 +44,16 @@ def detect_numberplate():
     # close cam
     cam.release()
 
-    if result:  # if image will detected without any error show result
-        imwrite(file_path, image)  # saving image in local storage
+    # if image will detected without any error show result
+    if result:
+        # saving image in local storage
+        imwrite(file_path, image)
+        # start ai detection
         detect_results = run(weights=YOLO / 'runs/train/yolov5s_results/weights/best.onnx',
                              imgsz=(416, 416),
                              source=save_dir,
                              nosave=NOSAVE
-                             )  # start ai detection
+                             )
         # remove image after detection
         if NOSAVE and os.path.exists(file_path):
             os.remove(file_path)
@@ -66,7 +69,7 @@ def detect_numberplate():
             cleaned_text_results = list(
                 map(clean, text_results))
             print(cleaned_text_results)
-            # print results when started manually
+            # print results if started manually
             if __name__ == "__main__":
                 print(cleaned_text_results)
             else:
@@ -77,7 +80,7 @@ def detect_numberplate():
     else:
         print("no image detected")
 
-    # return empty string when nothin was detected
+    # return empty string if nothing was detected
     return []
 
 

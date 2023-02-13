@@ -4,7 +4,7 @@ import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 
 # voltage threshold to reach from sensor input
-THRESHOLD = 1.08
+THRESHOLD = 1.15
 
 # create the I2C bus
 i2c = busio.I2C(board.SCL, board.SDA)
