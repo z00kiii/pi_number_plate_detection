@@ -1,4 +1,5 @@
 import datetime
+import json
 import threading
 
 from config import parkplatz_id, parkplatz_lot_id
@@ -67,7 +68,7 @@ class Main:
         lot_free = "true" if lot_free else "false"
         msg = '{"id": "' + self.id + '", "timestamp": "' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + \
             '", "lot_free": ' + lot_free + \
-            ', "number_plate": "' + str(numberplates) + '"}'
+            ', "number_plate": ' + str(json.dumps(numberplates)) + '}'
         self.publisher.publish("status/"+self.id, msg, qos=1)
 
     def send_heartbeat(self):
