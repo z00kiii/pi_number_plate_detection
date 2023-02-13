@@ -1,0 +1,12 @@
+[Unit]
+Description=My Sample Service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/usr/bin/python3 /home/pi/rodamaati/main.py
+
+[Install]
+WantedBy=multi-user.target
