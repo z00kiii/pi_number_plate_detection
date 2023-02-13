@@ -8,7 +8,7 @@ import publisher
 
 
 # in which intervals the hearbeat should be sent. time in sec
-HEARTBEAT_INTERVAL = 600
+HEARTBEAT_INTERVAL = 3600
 
 # in which intervals to check the sensor. time in sec
 SENSOR_INTERVAL = 10
@@ -72,7 +72,7 @@ class Main:
 
     def send_heartbeat(self):
         """Send hearbeat signal to the broker"""
-        self.publisher.publish("heartbeat/"+self.id, "heartbeatcheck", qos=1)
+        self.publisher.publish("heartbeat/"+self.id, "", qos=1)
         # Start timer for new beat
         threading.Timer(HEARTBEAT_INTERVAL, self.send_heartbeat).start()
 
